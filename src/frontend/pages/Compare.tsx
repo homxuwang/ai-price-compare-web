@@ -5,6 +5,8 @@ import { API_PATHS, CATEGORY_LABELS } from '../../shared/constants';
 import CompareChart from '../components/CompareChart';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import Sheet from '../components/Sheet';
+import DimDivider from '../components/DimDivider';
 
 interface Model {
   id: string;
@@ -94,63 +96,75 @@ function Compare() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-warm-900">价格对比工具</h1>
+    <div className="space-y-8">
+      <div>
+        <span className="eyebrow">// 并排比对 · COMPARE</span>
+        <h1 className="mt-3 font-mono text-3xl font-semibold text-chalk">价格对比工具</h1>
+      </div>
 
       {/* 模型选择 */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-medium">选择要对比的模型</h2>
-          <div className="space-x-2">
-            <button onClick={selectAll} className="text-sm text-primary-500 hover:underline">
+      <Sheet className="p-0">
+        <div className="flex items-center justify-between border-b border-line px-5 py-3">
+          <h2 className="font-mono text-sm uppercase tracking-blueprint text-chalk">
+            选择要对比的模型
+          </h2>
+          <div className="flex items-center gap-4 font-mono text-xs uppercase tracking-wide">
+            <button onClick={selectAll} className="text-cyan hover:text-cyan-soft">
               全选
             </button>
-            <button onClick={clearAll} className="text-sm text-warm-500 hover:underline">
+            <span className="text-line">|</span>
+            <button onClick={clearAll} className="text-dim hover:text-chalk">
               清空
             </button>
           </div>
         </div>
 
-        {modelsLoading ? (
-          <Loading text="加载模型列表..." />
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {models.map((model) => (
-              <label
-                key={model.id}
-                className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
-                  selectedModels.includes(model.id)
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-warm-200 hover:border-warm-300'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedModels.includes(model.id)}
-                  onChange={() => toggleModel(model.id)}
-                  className="mr-3"
-                />
-                <div>
-                  <div className="font-medium">{model.name}</div>
-                  <div className="text-sm text-warm-500">
-                    {CATEGORY_LABELS[model.category]}
-                  </div>
-                </div>
-              </label>
-            ))}
-          </div>
-        )}
+        <div className="p-5">
+          {modelsLoading ? (
+            <Loading text="加载模型列表…" />
+          ) : (
+            <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+              {models.map((model) => {
+                const on = selectedModels.includes(model.id);
+                return (
+                  <label
+                    key={model.id}
+                    className={`flex cursor-pointer items-center gap-3 border px-3 py-2.5 transition-colors ${
+                      on ? 'border-cyan bg-cyan/10' : 'border-line hover:border-dim'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={on}
+                      onChange={() => toggleModel(model.id)}
+                      className="h-4 w-4 flex-none accent-cyan"
+                    />
+                    <div className="min-w-0">
+                      <div className="truncate font-mono text-sm text-chalk">{model.name}</div>
+                      <div className="font-mono text-[10px] uppercase tracking-blueprint text-dim">
+                        {CATEGORY_LABELS[model.category]}
+                      </div>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          )}
 
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={handleCompare}
-            disabled={loading || selectedModels.length === 0}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? '对比中...' : '开始对比'}
-          </button>
+          <div className="mt-5 flex items-center justify-between">
+            <span className="font-mono text-xs uppercase tracking-blueprint text-dim">
+              已选 {String(selectedModels.length).padStart(2, '0')} 项
+            </span>
+            <button
+              onClick={handleCompare}
+              disabled={loading || selectedModels.length === 0}
+              className="btn-primary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {loading ? '对比中…' : '开始对比 →'}
+            </button>
+          </div>
         </div>
-      </div>
+      </Sheet>
 
       {/* 错误提示 */}
       {error && <ErrorMessage message={error} onRetry={handleCompare} />}
@@ -158,34 +172,32 @@ function Compare() {
       {/* 对比结果 */}
       {results.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-warm-900">对比结果</h2>
-
+          <DimDivider label="对比结果 · RESULTS" />
           {results.map((result, index) => (
             <div key={index} className="space-y-4">
-              <CompareChart
-                data={result.comparison}
-                modelName={result.modelName}
-              />
+              <CompareChart data={result.comparison} modelName={result.modelName} />
             </div>
           ))}
         </div>
       )}
 
       {/* 计算说明 */}
-      <div className="card">
-        <h3 className="font-medium text-warm-900 mb-3">计算说明</h3>
-        <div className="text-sm text-warm-600 space-y-2">
+      <Sheet corners={false} className="p-5">
+        <div className="eyebrow">NOTES · 计算说明</div>
+        <div className="mt-4 space-y-3 font-sans text-sm text-dim">
           <p>
-            <strong>积分换算模式:</strong> 单价 = (套餐价格 / 套餐积分) × 模型消耗积分
+            <span className="font-mono text-xs uppercase tracking-wide text-cyan">积分换算</span>
+            <br />单价 = (套餐价格 / 套餐积分) × 模型消耗积分
           </p>
           <p>
-            <strong>直接价格模式:</strong> 直接使用平台公布的单位价格
+            <span className="font-mono text-xs uppercase tracking-wide text-cyan">直接价格</span>
+            <br />直接使用平台公布的单位价格
           </p>
-          <p className="text-warm-500 mt-4">
-            * 所有价格已转换为 CNY 显示，汇率: 1 USD = 7.2 CNY
+          <p className="border-t border-dashed border-line pt-3 font-mono text-xs text-dim">
+            * 价格统一换算为 CNY 显示 · 汇率 1 USD = 7.2 CNY
           </p>
         </div>
-      </div>
+      </Sheet>
     </div>
   );
 }

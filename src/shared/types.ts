@@ -168,3 +168,119 @@ export interface Env {
   ADMIN_KEY: string;
   ASSETS: { fetch: typeof fetch };
 }
+
+// ============================================================
+// Studio 产品模型 — AI 工具比价 (里程碑 1, 前端 mock)
+// ============================================================
+
+export type ToolCategory = 'image' | 'video' | 'llm-api';
+
+// 价格可信度 (文档 §15.2)
+export type PriceConfidence =
+  | 'official' // 官方价格
+  | 'verified' // 已核验
+  | 'user-submitted' // 用户提交
+  | 'pending' // 待核验
+  | 'promotional' // 活动价
+  | 'regional' // 地区价
+  | 'outdated'; // 可能已过期
+
+export type PricingModelType =
+  | 'free'
+  | 'subscription'
+  | 'credit'
+  | 'usage'
+  | 'api'
+  | 'team'
+  | 'enterprise';
+
+// 商用权限 (文档 §6.4)
+export type CommercialUse = 'yes' | 'paid' | 'unclear' | 'no';
+
+export type WatermarkStatus = 'none' | 'watermarked' | 'removable';
+
+export type Region = 'cn' | 'global';
+
+export interface ToolPlan {
+  id: string;
+  name: string;
+  priceMonthly: number | null; // null = 免费 / 无月付
+  priceYearly?: number | null;
+  currency: string; // 原始币种
+  creditAmount?: number | null;
+  billingCycle: 'monthly' | 'yearly' | 'one_time' | 'usage' | 'custom';
+  commercialUse: CommercialUse;
+  watermark: WatermarkStatus;
+  quota?: string; // 额度描述
+  bestFor?: string;
+  notes?: string;
+}
+
+// 预估单位成本 (成本收据签名)
+export interface UnitCostEstimate {
+  unit: 'image' | 'video' | 'call' | 'mtoken-in' | 'mtoken-out';
+  low: number;
+  high: number;
+  currency: string;
+}
+
+export interface Tool {
+  id: string;
+  slug: string;
+  name: string;
+  toolCategory: ToolCategory;
+  tagline: string; // 一句话定位 (中文)
+  taglineEn?: string;
+  logoText?: string; // 无图时的字母标
+  url?: string;
+  sponsored?: boolean;
+  pricingModel: PricingModelType;
+  fromPrice: number | null; // 最低价 (原始币种)
+  fromCurrency: string;
+  freePlan: boolean;
+  recommendedPlan?: string;
+  commercialUse: CommercialUse;
+  watermark: WatermarkStatus;
+  regions: Region[];
+  needsProxyInCn?: boolean;
+  supportsCny?: boolean;
+  audiences: string[]; // 适合人群 (i18n key)
+  tags: string[]; // 能力标签 (i18n key)
+  bestFor: string[];
+  notIdealFor: string[];
+  unitCost?: UnitCostEstimate; // 预计单位成本
+  confidence: PriceConfidence;
+  lastUpdated: string; // ISO date
+  plans: ToolPlan[];
+  popularity: number; // 排序权重
+}
+
+export interface PriceUpdate {
+  id: string;
+  toolSlug: string;
+  toolName: string;
+  summary: string; // 变更内容 (中文)
+  summaryEn?: string;
+  date: string; // ISO
+  status: PriceConfidence;
+}
+
+export interface Guide {
+  id: string;
+  slug: string;
+  title: string;
+  titleEn?: string;
+  excerpt?: string;
+  category: ToolCategory | 'general';
+}
+
+export interface SponsoredSlot {
+  id: string;
+  toolSlug: string;
+  toolName: string;
+  tagline: string;
+  taglineEn?: string;
+  logoText?: string;
+  url: string;
+  ctaLabel?: string;
+}

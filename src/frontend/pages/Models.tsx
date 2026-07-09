@@ -1,4 +1,4 @@
-// AI Price Compare Web - 模型列表页
+// OpenPriceHub · 模型列表页 — 规格目录
 
 import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -6,6 +6,14 @@ import { MODEL_CATEGORIES, CATEGORY_LABELS } from '../../shared/constants';
 import { useModels } from '../hooks/useApi';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import Sheet from '../components/Sheet';
+
+const CATEGORY_CODES: Record<string, string> = {
+  text: 'TXT',
+  image: 'IMG',
+  video: 'VID',
+  audio: 'AUD',
+};
 
 function Models() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,7 +31,7 @@ function Models() {
   }
 
   if (loading) {
-    return <Loading text="加载模型列表..." />;
+    return <Loading text="加载模型列表…" />;
   }
 
   if (error) {
@@ -31,69 +39,70 @@ function Models() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-warm-900">模型列表</h1>
-        <div className="text-warm-500">{models.length} 个模型</div>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <span className="eyebrow">// 规格目录 · MODELS</span>
+          <h1 className="mt-3 font-mono text-3xl font-semibold text-chalk">模型列表</h1>
+        </div>
+        <div className="font-mono text-sm tabular-nums text-dim">
+          {String(models.length).padStart(2, '0')} 项 · ITEMS
+        </div>
       </div>
 
-      {/* 类别筛选 */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => handleCategoryChange('')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            !currentCategory
-              ? 'bg-primary-500 text-white'
-              : 'bg-warm-100 text-warm-700 hover:bg-warm-200'
-          }`}
-        >
-          全部
-        </button>
-        {MODEL_CATEGORIES.map((category) => (
-          <button
-            key={category}
-            onClick={() => handleCategoryChange(category)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              currentCategory === category
-                ? 'bg-primary-500 text-white'
-                : 'bg-warm-100 text-warm-700 hover:bg-warm-200'
-            }`}
-          >
-            {CATEGORY_LABELS[category]}
-          </button>
-        ))}
+      {/* 类别筛选 — 尺寸线标签 */}
+      <div className="flex flex-wrap border border-line">
+        {[{ key: '', label: '全部', code: 'ALL' }, ...MODEL_CATEGORIES.map((c) => ({ key: c, label: CATEGORY_LABELS[c], code: CATEGORY_CODES[c] }))].map(
+          (tab) => {
+            const active = currentCategory === tab.key;
+            return (
+              <button
+                key={tab.key || 'all'}
+                onClick={() => handleCategoryChange(tab.key)}
+                className={`flex items-baseline gap-2 border-r border-line px-4 py-2.5 font-mono text-sm uppercase tracking-wide transition-colors last:border-r-0 ${
+                  active ? 'bg-cyan/10 text-cyan' : 'text-dim hover:bg-panel-2 hover:text-chalk'
+                }`}
+              >
+                <span className="text-[10px] tracking-blueprint opacity-60">{tab.code}</span>
+                {tab.label}
+              </button>
+            );
+          }
+        )}
       </div>
 
-      {/* 模型列表 */}
+      {/* 列表 */}
       {models.length === 0 ? (
-        <div className="card text-center py-12">
-          <div className="text-warm-500 mb-4">暂无模型数据</div>
+        <div className="border border-dashed border-line bg-panel px-4 py-14 text-center">
+          <div className="mb-5 font-mono text-sm uppercase tracking-blueprint text-dim">
+            — 暂无模型数据 · NO DATA —
+          </div>
           <Link to="/submit" className="btn-primary">
-            提交新模型
+            提交新模型 →
           </Link>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {models.map((model) => (
-            <Link
-              key={model.id}
-              to={`/models/${model.id}`}
-              className="card hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="font-medium text-warm-900">{model.name}</h2>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <span className="px-2 py-0.5 bg-warm-100 rounded text-sm">
-                      {CATEGORY_LABELS[model.category] || model.category}
-                    </span>
-                  </div>
+            <Link key={model.id} to={`/models/${model.id}`} className="group">
+              <Sheet className="h-full p-5 transition-colors group-hover:bg-panel-2 group-hover:border-cyan">
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-xs font-semibold tracking-widest text-cyan">
+                    {CATEGORY_CODES[model.category] || model.category?.toUpperCase()}
+                  </span>
+                  <span className="font-mono text-dim transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </div>
-                <div className="text-primary-500">→</div>
-              </div>
-              <div className="mt-4 text-sm text-warm-600">
-                {model.platformsCount} 个平台提供
-              </div>
+                <h2 className="mt-4 font-mono text-lg font-medium text-chalk">{model.name}</h2>
+                <div className="mt-1 font-mono text-xs uppercase tracking-wide text-dim">
+                  {CATEGORY_LABELS[model.category] || model.category}
+                </div>
+                <div className="mt-5 flex items-baseline gap-2 border-t border-dashed border-line pt-3 font-mono text-xs text-dim">
+                  <span className="tabular-nums text-chalk">{model.platformsCount}</span>
+                  个平台提供
+                </div>
+              </Sheet>
             </Link>
           ))}
         </div>

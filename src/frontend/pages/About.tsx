@@ -1,123 +1,95 @@
-// AI Price Compare Web - 关于页面
+// OpenPriceHub · 关于页面 — 项目图纸说明
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Sheet from '../components/Sheet';
+import DimDivider from '../components/DimDivider';
+
+const features = [
+  { code: 'QRY', t: '价格查询', d: '浏览不同平台上 AI 模型的定价信息。' },
+  { code: 'CMP', t: '跨平台对比', d: '选择多个模型,查看各平台的价格差异。' },
+  { code: 'CVT', t: '积分换算', d: '自动将积分套餐换算成统一单位价格。' },
+  { code: 'CRW', t: '众包数据', d: '用户提交新价格,经审核后标注展示。' },
+];
+
+const stack = {
+  前端: ['React 18', 'Vite', 'Tailwind CSS', 'React Router'],
+  后端: ['Cloudflare Workers', 'Cloudflare D1 (SQLite)', 'Cloudflare KV'],
+};
 
 function About() {
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-warm-900 mb-4">关于 AI 价格对比</h1>
-        <p className="text-warm-600">
-          一个免费、开源的 AI 模型价格对比平台
-        </p>
+    <div className="mx-auto max-w-3xl space-y-10">
+      <div>
+        <span className="eyebrow">// 关于 · README</span>
+        <h1 className="mt-3 font-mono text-3xl font-semibold text-chalk">关于 OpenPriceHub</h1>
+        <p className="mt-3 font-sans text-dim">一个免费、开源的 AI 模型价格对比平台。</p>
       </div>
 
-      {/* 项目介绍 */}
-      <div className="card">
-        <h2 className="text-xl font-bold text-warm-900 mb-4">项目介绍</h2>
-        <div className="space-y-4 text-warm-600">
+      <section>
+        <DimDivider label="项目介绍 · OVERVIEW" />
+        <Sheet corners={false} className="mt-5 space-y-4 p-6 font-sans text-sm leading-relaxed text-dim">
           <p>
-            AI 价格对比是一个帮助用户比较不同 AI 平台模型定价的工具。
-            随着 AI 服务的普及，越来越多的平台提供各种模型，但价格差异很大。
-            我们的目标是让这些价格信息透明化，帮助用户找到最划算的方案。
+            OpenPriceHub 帮助用户比较不同 AI 平台模型的定价。随着 AI 服务普及,平台众多而价格差异巨大。
+            我们的目标是让价格信息透明化,帮你找到最划算的方案。
           </p>
-          <p>
-            本项目支持文本、图片、视频、音频四类模型的价格对比，
-            涵盖了市面上主流的 AI 服务平台。
-          </p>
-        </div>
-      </div>
+          <p>本项目支持文本、图片、视频、音频四类模型的价格对比,涵盖市面主流 AI 服务平台。</p>
+        </Sheet>
+      </section>
 
-      {/* 核心功能 */}
-      <div className="card">
-        <h2 className="text-xl font-bold text-warm-900 mb-4">核心功能</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="flex items-start space-x-3">
-            <span className="text-2xl">🔍</span>
-            <div>
-              <h3 className="font-medium">价格查询</h3>
-              <p className="text-sm text-warm-600">
-                浏览不同平台上 AI 模型的定价信息
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <span className="text-2xl">📊</span>
-            <div>
-              <h3 className="font-medium">跨平台对比</h3>
-              <p className="text-sm text-warm-600">
-                选择多个模型，查看各平台的价格差异
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <span className="text-2xl">💰</span>
-            <div>
-              <h3 className="font-medium">积分换算</h3>
-              <p className="text-sm text-warm-600">
-                自动将积分套餐换算成单位价格
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <span className="text-2xl">👥</span>
-            <div>
-              <h3 className="font-medium">众包数据</h3>
-              <p className="text-sm text-warm-600">
-                用户可以提交新价格，经审核后展示
-              </p>
-            </div>
-          </div>
+      <section>
+        <DimDivider label="核心功能 · FEATURES" />
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {features.map((f) => (
+            <Sheet key={f.code} className="p-5">
+              <span className="font-mono text-xs font-semibold tracking-widest text-cyan">
+                {f.code}
+              </span>
+              <h3 className="mt-3 font-sans font-medium text-chalk">{f.t}</h3>
+              <p className="mt-1 font-sans text-sm text-dim">{f.d}</p>
+            </Sheet>
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* 技术栈 */}
-      <div className="card">
-        <h2 className="text-xl font-bold text-warm-900 mb-4">技术栈</h2>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <h3 className="font-medium mb-2">前端</h3>
-            <ul className="space-y-1 text-warm-600">
-              <li>• React 18</li>
-              <li>• Vite</li>
-              <li>• Tailwind CSS</li>
-              <li>• React Router</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-medium mb-2">后端</h3>
-            <ul className="space-y-1 text-warm-600">
-              <li>• Cloudflare Workers</li>
-              <li>• Cloudflare D1 (SQLite)</li>
-              <li>• Cloudflare KV</li>
-            </ul>
-          </div>
+      <section>
+        <DimDivider label="技术栈 · STACK" />
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {Object.entries(stack).map(([role, items]) => (
+            <Sheet key={role} corners={false} className="p-5">
+              <div className="eyebrow">{role}</div>
+              <ul className="mt-3 space-y-1.5 font-mono text-sm text-dim">
+                {items.map((i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    <span className="text-cyan">›</span>
+                    {i}
+                  </li>
+                ))}
+              </ul>
+            </Sheet>
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* 开源信息 */}
-      <div className="card">
-        <h2 className="text-xl font-bold text-warm-900 mb-4">开源信息</h2>
-        <div className="space-y-4 text-warm-600">
-          <p>
-            本项目完全开源，欢迎贡献代码或提交问题。
-          </p>
-          <div className="flex space-x-4">
+      <section>
+        <DimDivider label="开源 · OPEN SOURCE" />
+        <Sheet corners={false} className="mt-5 p-6">
+          <p className="font-sans text-sm text-dim">本项目完全开源,欢迎贡献代码或提交问题。</p>
+          <div className="mt-5 flex flex-wrap gap-3">
             <a
               href="https://github.com/homxuwang/AIPriceCompareTool"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-secondary"
             >
-              GitHub
+              GitHub ↗
             </a>
             <Link to="/submit" className="btn-primary">
-              提交价格
+              提交价格 →
             </Link>
           </div>
-        </div>
-      </div>
+        </Sheet>
+      </section>
     </div>
   );
 }

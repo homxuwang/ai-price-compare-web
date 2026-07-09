@@ -24,6 +24,10 @@ export function generateHTML({
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F8FAFC" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <meta name="description" content="${escapeHtml(description)}" />
     ${keywords ? `<meta name="keywords" content="${escapeHtml(keywords)}" />` : ''}
     <meta name="robots" content="index, follow" />
@@ -56,7 +60,7 @@ export function generateHTML({
     <title>${escapeHtml(title)}</title>
     <link rel="stylesheet" href="/assets/index.css" />
   </head>
-  <body>
+  <body style="background:#F8FAFC;color:#111827;margin:0">
     <div id="root">${content || ''}</div>
     <script type="module" src="/assets/index.js"></script>
   </body>

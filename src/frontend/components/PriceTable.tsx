@@ -1,8 +1,8 @@
-// AI Price Compare Web - 价格表格组件
+// OpenPriceHub · 价格表格 — 规格图纸样式,最低价旗标置顶
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CATEGORY_LABELS, PRICING_MODE_LABELS } from '../../shared/constants';
+import { CATEGORY_LABELS } from '../../shared/constants';
 
 interface PriceRow {
   platformName: string;
@@ -27,88 +27,95 @@ function PriceTable({ data, showModel = false, showRank = true }: PriceTableProp
 
   if (validData.length === 0) {
     return (
-      <div className="card text-center py-8 text-warm-500">暂无价格数据</div>
+      <div className="border border-dashed border-line bg-panel px-4 py-10 text-center font-mono text-sm uppercase tracking-blueprint text-dim">
+        — 暂无价格数据 · NO DATA —
+      </div>
     );
   }
 
+  const sorted = [...validData].sort((a, b) => (a.rank || 0) - (b.rank || 0));
+
   return (
-    <div className="card overflow-x-auto">
-      <table className="w-full">
+    <div className="overflow-x-auto border border-line bg-panel">
+      <table className="w-full border-collapse">
         <thead>
-          <tr className="border-b border-warm-200">
-            {showRank && (
-              <th className="text-left py-3 px-4 font-medium text-warm-700">排名</th>
-            )}
-            <th className="text-left py-3 px-4 font-medium text-warm-700">平台</th>
-            {showModel && (
-              <th className="text-left py-3 px-4 font-medium text-warm-700">模型</th>
-            )}
-            <th className="text-left py-3 px-4 font-medium text-warm-700">套餐</th>
-            <th className="text-right py-3 px-4 font-medium text-warm-700">单价</th>
+          <tr className="border-b border-line text-left font-mono text-[10px] uppercase tracking-blueprint text-dim">
+            {showRank && <th className="px-4 py-3 font-medium">#</th>}
+            <th className="px-4 py-3 font-medium">平台 · Platform</th>
+            {showModel && <th className="px-4 py-3 font-medium">模型 · Model</th>}
+            <th className="px-4 py-3 font-medium">套餐 · Plan</th>
+            <th className="px-4 py-3 text-right font-medium">单价 · Unit</th>
           </tr>
         </thead>
-        <tbody>
-          {validData
-            .sort((a, b) => (a.rank || 0) - (b.rank || 0))
-            .map((row, index) => (
+        <tbody className="font-mono text-sm">
+          {sorted.map((row, index) => {
+            const best = row.rank === 1;
+            return (
               <tr
                 key={index}
-                className={`border-b border-warm-100 last:border-0 ${
-                  row.rank === 1 ? 'bg-green-50' : ''
+                className={`border-b border-line/50 last:border-0 transition-colors ${
+                  best ? 'bg-mint/10' : 'hover:bg-panel-2'
                 }`}
               >
                 {showRank && (
-                  <td className="py-3 px-4">
+                  <td className="px-4 py-3">
                     <span
-                      className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                        row.rank === 1
-                          ? 'bg-green-500 text-white'
+                      className={`inline-flex h-6 min-w-6 items-center justify-center border px-1 text-xs tabular-nums ${
+                        best
+                          ? 'border-mint text-mint'
                           : row.rank === 2
-                          ? 'bg-warm-300 text-warm-700'
-                          : 'bg-warm-200 text-warm-600'
+                          ? 'border-cyan text-cyan'
+                          : 'border-line text-dim'
                       }`}
                     >
                       {row.rank}
                     </span>
                   </td>
                 )}
-                <td className="py-3 px-4">
-                  {row.platformId ? (
-                    <Link
-                      to={`/platforms/${row.platformId}`}
-                      className="text-primary-500 hover:underline"
-                    >
-                      {row.platformName}
-                    </Link>
-                  ) : (
-                    <span>{row.platformName}</span>
-                  )}
+                <td className="px-4 py-3">
+                  <span className="flex items-center gap-2">
+                    {best && <span className="text-mint" aria-hidden>◂</span>}
+                    {row.platformId ? (
+                      <Link
+                        to={`/platforms/${row.platformId}`}
+                        className="text-chalk underline-offset-2 hover:text-cyan hover:underline"
+                      >
+                        {row.platformName}
+                      </Link>
+                    ) : (
+                      <span className="text-chalk">{row.platformName}</span>
+                    )}
+                    {best && <span className="flag-min ml-1">LOWEST</span>}
+                  </span>
                 </td>
                 {showModel && (
-                  <td className="py-3 px-4">
+                  <td className="px-4 py-3">
                     {row.modelId ? (
                       <Link
                         to={`/models/${row.modelId}`}
-                        className="text-primary-500 hover:underline"
+                        className="text-chalk underline-offset-2 hover:text-cyan hover:underline"
                       >
                         {row.modelName}
                       </Link>
                     ) : (
-                      <span>{row.modelName}</span>
+                      <span className="text-chalk">{row.modelName}</span>
                     )}
                     {row.modelCategory && (
-                      <span className="ml-2 px-2 py-0.5 bg-warm-100 rounded text-xs">
+                      <span className="ml-2 border border-line px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-dim">
                         {CATEGORY_LABELS[row.modelCategory] || row.modelCategory}
                       </span>
                     )}
                   </td>
                 )}
-                <td className="py-3 px-4 text-warm-600">{row.planName || '-'}</td>
-                <td className="py-3 px-4 text-right font-medium">
+                <td className="px-4 py-3 text-dim">{row.planName || '—'}</td>
+                <td
+                  className={`px-4 py-3 text-right tabular-nums ${best ? 'text-mint' : 'text-chalk'}`}
+                >
                   {row.singleRunCost?.toFixed(6)} {row.currency}
                 </td>
               </tr>
-            ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

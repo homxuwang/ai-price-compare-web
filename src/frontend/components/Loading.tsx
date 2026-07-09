@@ -1,4 +1,4 @@
-// AI Price Compare Web - 加载组件
+// OpenPriceHub · 加载 (浅色)
 
 import React from 'react';
 
@@ -8,18 +8,11 @@ interface LoadingProps {
 }
 
 function Loading({ size = 'md', text }: LoadingProps) {
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12',
-  };
-
+  const dim = { sm: 'h-4 w-4', md: 'h-7 w-7', lg: 'h-10 w-10' }[size];
   return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <div
-        className={`${sizeClasses[size]} border-4 border-warm-200 border-t-primary-500 rounded-full animate-spin`}
-      />
-      {text && <p className="mt-4 text-warm-500">{text}</p>}
+    <div className="flex flex-col items-center justify-center py-10">
+      <div className={`${dim} animate-spin rounded-full border-2 border-line border-t-primary`} />
+      {text && <p className="mt-3 text-sm text-ink-2">{text}</p>}
     </div>
   );
 }

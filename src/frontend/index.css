@@ -2,39 +2,159 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   OPENPRICEHUB · STUDIO 设计系统 (浅色创作者风)
+   白卡 + 细边 + 克制阴影 + 靛蓝强调。签名: 成本收据 / 可信度徽章。
+   ============================================================ */
+
 :root {
-  --color-primary: #bf5a2b;
-  --color-primary-light: #e5d4b6;
-  --color-warm-bg: #fffbf5;
-  --color-warm-border: #e5d4b6;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --ink: #111827;
+  --ink-2: #6b7280;
+  --line: #e5e7eb;
+  --primary: #4f46e5;
+  --primary-d: #4338ca;
+  --accent: #06b6d4;
+  --success: #16a34a;
+  --warn: #f59e0b;
+  --danger: #dc2626;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: var(--color-warm-bg);
-  color: #44403c;
   margin: 0;
   padding: 0;
+  font-family: 'Inter', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--ink);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
 }
 
 @layer components {
+  /* ---- 按钮 (各变体自含基座,避免 @apply 自定义类) --------- */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
   .btn-primary {
-    @apply bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors;
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 bg-primary text-white hover:bg-primary-700;
   }
-
   .btn-secondary {
-    @apply bg-warm-100 text-warm-800 px-4 py-2 rounded-lg hover:bg-warm-200 transition-colors;
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 border border-line bg-surface text-ink hover:bg-surface-2;
+  }
+  .btn-ghost {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors text-ink-2 hover:bg-surface-2 hover:text-ink;
   }
 
+  /* ---- 卡片 --------------------------------------------- */
   .card {
-    @apply bg-white border border-warm-200 rounded-xl p-4 shadow-sm;
+    @apply rounded-card border border-line bg-surface shadow-card;
+  }
+  .card-hover {
+    @apply transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover;
   }
 
+  /* ---- 表单 --------------------------------------------- */
   .input {
-    @apply w-full px-3 py-2 border border-warm-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-2/70 transition-colors;
+  }
+  .input:focus {
+    @apply border-primary outline-none ring-2 ring-primary/20;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-label text-ink-2;
   }
 
-  .label {
-    @apply block text-sm font-medium text-warm-700 mb-1;
+  /* ---- 眉标 --------------------------------------------- */
+  .eyebrow {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-label text-primary;
+  }
+
+  /* ---- 筛选 chip ---------------------------------------- */
+  .chip {
+    @apply inline-flex cursor-pointer select-none items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm text-ink-2 transition-colors hover:border-primary-200 hover:text-ink;
+  }
+  .chip-active {
+    @apply border-primary bg-primary-50 text-primary-700 hover:border-primary hover:text-primary-700;
+  }
+
+  /* ---- 徽章基座 ----------------------------------------- */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-dot::before {
+    content: '';
+    @apply h-1.5 w-1.5 flex-none rounded-full bg-current;
+  }
+
+  /* ---- 成本收据签名 ------------------------------------- */
+  .receipt {
+    @apply rounded-lg border border-dashed border-line bg-surface-2/60 p-3 font-mono;
+  }
+  .receipt-row {
+    @apply flex items-baseline justify-between gap-2 text-sm;
+  }
+  .receipt-row .k {
+    @apply text-ink-2;
+  }
+  .receipt-row .v {
+    @apply font-semibold tabular-nums text-ink;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Space Grotesk', Inter, system-ui, sans-serif;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* 隐藏滚动条 (横向 chip 行) */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
