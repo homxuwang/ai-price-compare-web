@@ -1,7 +1,7 @@
 // AI Price Compare Web - 价格计算测试
 
 import { describe, it, expect } from 'vitest';
-import { calculateUnitCostFromPlanCredits, buildComparisonRow, convertCurrency } from '../worker/utils/calc';
+import { calculateUnitCostFromPlanCredits, buildComparisonRow, convertCurrency } from '../src/worker/utils/calc';
 
 describe('calculateUnitCostFromPlanCredits', () => {
   it('calculates image unit cost from plan credits', () => {

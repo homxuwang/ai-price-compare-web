@@ -7,6 +7,7 @@ export const en = {
     image: 'AI Image',
     video: 'AI Video',
     llmApi: 'LLM/API',
+    calculator: 'Model Cost Calculator',
     guides: 'Guides',
     submit: 'Submit Price',
   },
@@ -61,6 +62,7 @@ export const en = {
   },
   categories: {
     all: 'All',
+    official: 'Official',
     image: 'AI Image',
     video: 'AI Video',
     'llm-api': 'LLM/API',

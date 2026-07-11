@@ -53,6 +53,7 @@ export function getPopular(category: ToolCategory, n = 4): Tool[] {
 
 export interface ToolFilters {
   category?: ToolCategory | 'all';
+  officialOnly?: boolean;
   query?: string;
   audiences?: string[];
   pricing?: string[];
@@ -67,6 +68,7 @@ export function filterTools(tools: Tool[], f: ToolFilters): Tool[] {
   const q = (f.query || '').trim().toLowerCase();
   return tools.filter((t) => {
     if (f.category && f.category !== 'all' && t.toolCategory !== f.category) return false;
+    if (f.officialOnly && t.confidence !== 'official') return false;
     if (q) {
       const hay = `${t.name} ${t.slug} ${t.tagline} ${t.taglineEn ?? ''} ${t.tags.join(' ')}`.toLowerCase();
       if (!hay.includes(q)) return false;

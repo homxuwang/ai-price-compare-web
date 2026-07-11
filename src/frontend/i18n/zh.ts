@@ -7,6 +7,7 @@ export const zh = {
     image: 'AI 生图',
     video: 'AI 生视频',
     llmApi: 'LLM/API',
+    calculator: '模型成本计算器',
     guides: '指南',
     submit: '提交价格',
   },
@@ -60,6 +61,7 @@ export const zh = {
   },
   categories: {
     all: '全部',
+    official: '官方',
     image: 'AI 生图',
     video: 'AI 生视频',
     'llm-api': 'LLM/API',

@@ -1,6 +1,6 @@
 // OpenPriceHub · Layout — 顶部导航 + 语言/货币切换 + 移动底部导航 + 页脚
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useT, useLocalePath } from '../i18n';
 import { LanguageSwitcher, CurrencySwitcher } from './Switchers';
@@ -13,11 +13,15 @@ interface LayoutProps {
 
 const navItems: { path: string; key: string }[] = [
   { path: '/', key: 'nav.home' },
-  { path: '/tools', key: 'nav.tools' },
+  { path: '/calculator', key: 'nav.calculator' },
+  { path: '/guides', key: 'nav.guides' },
+];
+
+const toolNavItems: { path: string; key: string }[] = [
+  { path: '/tools', key: 'categories.all' },
   { path: '/tools?category=image', key: 'nav.image' },
   { path: '/tools?category=video', key: 'nav.video' },
   { path: '/tools?category=llm-api', key: 'nav.llmApi' },
-  { path: '/guides', key: 'nav.guides' },
 ];
 
 function Mark() {
@@ -36,6 +40,20 @@ function Layout({ children }: LayoutProps) {
   const lp = useLocalePath();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const toolsMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setToolsOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const closeMenu = (event: MouseEvent) => {
+      if (!toolsMenuRef.current?.contains(event.target as Node)) setToolsOpen(false);
+    };
+    document.addEventListener('mousedown', closeMenu);
+    return () => document.removeEventListener('mousedown', closeMenu);
+  }, []);
 
   // 当前路径(去掉 locale 前缀) + query,用于高亮
   const current = location.pathname.replace(/^\/(zh|en)/, '') || '/';
@@ -60,7 +78,50 @@ function Layout({ children }: LayoutProps) {
 
           {/* 桌面导航 */}
           <nav className="ml-2 hidden flex-1 items-center gap-1 lg:flex">
-            {navItems.map((it) => (
+            {navItems.slice(0, 1).map((it) => (
+              <Link
+                key={it.key}
+                to={lp(it.path)}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive(it.path) ? 'bg-primary-50 text-primary-700' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
+                }`}
+              >
+                {t(it.key)}
+              </Link>
+            ))}
+            <div className="relative" ref={toolsMenuRef}>
+              <button
+                type="button"
+                onClick={() => setToolsOpen((value) => !value)}
+                aria-expanded={toolsOpen}
+                aria-haspopup="menu"
+                className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  current === '/tools' ? 'bg-primary-50 text-primary-700' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
+                }`}
+              >
+                {t('nav.tools')}
+                <svg className={`h-3.5 w-3.5 transition-transform ${toolsOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              {toolsOpen && (
+                <div className="absolute left-0 top-full z-50 mt-2 w-44 rounded-xl border border-line bg-surface p-1.5 shadow-pop" role="menu">
+                  {toolNavItems.map((it) => (
+                    <Link
+                      key={it.key}
+                      to={lp(it.path)}
+                      role="menuitem"
+                      className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        isActive(it.path) ? 'bg-primary-50 text-primary-700' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
+                      }`}
+                    >
+                      {t(it.key)}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            {navItems.slice(1).map((it) => (
               <Link
                 key={it.key}
                 to={lp(it.path)}
@@ -101,7 +162,7 @@ function Layout({ children }: LayoutProps) {
         {open && (
           <div className="border-t border-line lg:hidden">
             <nav className="mx-auto max-w-7xl px-4 py-2 sm:px-6">
-              {[...navItems, { path: '/submit', key: 'nav.submit' }].map((it) => (
+              {[navItems[0], { path: '/tools', key: 'nav.tools' }, ...toolNavItems.slice(1), ...navItems.slice(1), { path: '/submit', key: 'nav.submit' }].map((it) => (
                 <Link
                   key={it.key}
                   to={lp(it.path)}

@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Tools from './pages/Tools';
 import Submit from './pages/Submit';
 import Soon from './pages/Soon';
+import ManualCompareWorkspace from './pages/ManualCompareWorkspace';
 
 // 同步 <html lang>
 function LocaleSync({ locale }: { locale: Locale }) {
@@ -34,7 +35,8 @@ function LocaleShell() {
               <Route path="tools" element={<Tools />} />
               <Route path="tools/:slug" element={<Soon />} />
               <Route path="compare" element={<Soon />} />
-              <Route path="calculator" element={<Soon />} />
+              <Route path="calculator" element={<ManualCompareWorkspace />} />
+              <Route path="manual-compare" element={<ManualCompareWorkspace />} />
               <Route path="guides" element={<Soon />} />
               <Route path="submit" element={<Submit />} />
               <Route path="about" element={<Soon />} />
@@ -53,6 +55,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/zh" replace />} />
+        <Route path="/manual-compare" element={<Navigate to="/zh/manual-compare" replace />} />
         <Route path="/:lang/*" element={<LocaleShell />} />
       </Routes>
     </BrowserRouter>

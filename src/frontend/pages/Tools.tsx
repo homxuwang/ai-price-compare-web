@@ -163,6 +163,7 @@ function Tools() {
   const sponsored = useSponsored().data;
 
   const urlCat = (params.get('category') as ToolCategory | null) || 'all';
+  const officialOnly = params.get('official') === '1';
   const urlQ = params.get('q') || '';
 
   const [filters, setFilters] = useState<ToolFilters>({ audiences: [], pricing: [], commercial: [], regions: [], capabilities: [] });
@@ -173,8 +174,16 @@ function Tools() {
 
   const setCategory = (c: ToolCategory | 'all') => {
     const next = new URLSearchParams(params);
+    next.delete('official');
     if (c === 'all') next.delete('category');
     else next.set('category', c);
+    setParams(next, { replace: true });
+  };
+  const setOfficial = () => {
+    const next = new URLSearchParams(params);
+    next.delete('category');
+    if (officialOnly) next.delete('official');
+    else next.set('official', '1');
     setParams(next, { replace: true });
   };
   const setQuery = (q: string) => {
@@ -185,9 +194,9 @@ function Tools() {
   };
 
   const result = useMemo(() => {
-    const filtered = filterTools(allTools, { ...filters, category: urlCat, query: urlQ });
+    const filtered = filterTools(allTools, { ...filters, category: urlCat, officialOnly, query: urlQ });
     return sortTools(filtered, sort, currency);
-  }, [allTools, filters, urlCat, urlQ, sort, currency]);
+  }, [allTools, filters, urlCat, officialOnly, urlQ, sort, currency]);
 
   // 计算激活筛选数(用于移动端按钮角标)
   const activeCount = FILTER_CONFIG.reduce((n, g) => n + ((filters[g.field] as string[] | undefined)?.length ?? 0), 0);
@@ -208,16 +217,28 @@ function Tools() {
 
       {/* 分类 Tab */}
       <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-line pb-4">
-        {CATS.map((c) => (
+        {CATS.map((c, index) => (
+          <React.Fragment key={c}>
           <button
-            key={c}
             onClick={() => setCategory(c)}
             className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
-              urlCat === c ? 'bg-primary text-white' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
+              !officialOnly && urlCat === c ? 'bg-primary text-white' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
             }`}
           >
             {t(`categories.${c}`)}
           </button>
+          {index === 0 && (
+            <button
+              onClick={setOfficial}
+              aria-pressed={officialOnly}
+              className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
+                officialOnly ? 'bg-primary text-white' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
+              }`}
+            >
+              {t('categories.official')}
+            </button>
+          )}
+          </React.Fragment>
         ))}
         <button onClick={() => setMore((v) => !v)} className="rounded-lg px-3.5 py-2 text-sm font-medium text-ink-2 hover:bg-surface-2">
           {t('categories.more')} ▾
